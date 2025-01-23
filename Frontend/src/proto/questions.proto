@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package questions; 
+
 service QuestionService {
   rpc SearchQuestions (SearchRequest) returns (SearchResponse);
   rpc FindByID(IDRequest) returns (IDResponse);
@@ -50,3 +52,8 @@ message IDResponse {
   Question question = 1;
 }
 // For ID ------------------------------------------------
+
+
+
+
+// protoc -I=. src/proto/questions.proto --js_out=import_style=commonjs,binary:. --grpc-web_out=import_style=commonjs,mode=grpcwebtext:.

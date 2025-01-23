@@ -17,6 +17,9 @@ importers:
       '@grpc/proto-loader':
         specifier: ^0.7.13
         version: 0.7.13
+      '@grpc/reflection':
+        specifier: ^1.0.4
+        version: 1.0.4(@grpc/grpc-js@1.12.5)
       concurrently:
         specifier: ^8.2.0
         version: 8.2.2
@@ -26,9 +29,9 @@ importers:
       express:
         specifier: ^4.21.2
         version: 4.21.2
-      grpc:
-        specifier: ^1.24.11
-        version: 1.24.11(encoding@0.1.13)
+      google-protobuf:
+        specifier: ^3.21.4
+        version: 3.21.4
       grpc-web:
         specifier: ^1.5.0
         version: 1.5.0
@@ -380,6 +383,11 @@ packages:
     resolution: {integrity: sha512-AiXO/bfe9bmxBjxxtYxFAXGZvMaN5s8kO+jBHAJCON8rJoB5YS/D6X7ZNc6XQkuHNmyl4CYaMI1fJ/Gn27RGGw==}
     engines: {node: '>=6'}
     hasBin: true
+
+  '@grpc/reflection@1.0.4':
+    resolution: {integrity: sha512-znA8v4AviOD3OPOxy11pxrtP8k8DanpefeTymS8iGW1fVr1U2cHuzfhYqDPHnVNDf4qvF9E25KtSihPy2DBWfQ==}
+    peerDependencies:
+      '@grpc/grpc-js': ^1.8.21
 
   '@js-sdsl/ordered-map@4.4.2':
     resolution: {integrity: sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==}
@@ -1538,6 +1546,9 @@ packages:
   globby@6.1.0:
     resolution: {integrity: sha512-KVbFv2TQtbzCoxAnfD6JcHZTYCzyliEaaeM/gH8qQdkKr5s0OP9scEgvdcngyk7AVdY6YVW/TJHd+lQ/Df3Daw==}
     engines: {node: '>=0.10.0'}
+
+  google-protobuf@3.21.4:
+    resolution: {integrity: sha512-MnG7N936zcKTco4Jd2PX2U96Kf9PxygAPKBug+74LHzmHXmceN16MmRcdgZv+DGef/S9YvQAfRsNCn4cjf9yyQ==}
 
   gopd@1.2.0:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
@@ -4116,6 +4127,12 @@ snapshots:
       protobufjs: 7.4.0
       yargs: 17.7.2
 
+  '@grpc/reflection@1.0.4(@grpc/grpc-js@1.12.5)':
+    dependencies:
+      '@grpc/grpc-js': 1.12.5
+      '@grpc/proto-loader': 0.7.13
+      protobufjs: 7.4.0
+
   '@js-sdsl/ordered-map@4.4.2': {}
 
   '@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13)':
@@ -5622,6 +5639,8 @@ snapshots:
       object-assign: 4.1.1
       pify: 2.3.0
       pinkie-promise: 2.0.1
+
+  google-protobuf@3.21.4: {}
 
   gopd@1.2.0: {}
 

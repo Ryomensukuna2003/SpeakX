@@ -28,6 +28,8 @@ export const findById = async (call, callback) => {
 };
 
 export const searchQuestions = async (call, callback) => {
+  console.log("Received search request:", call.request);
+
   const { query, page = 1, limit = 10, type = "" } = call.request;
 
   const searchQuery = {
@@ -35,26 +37,38 @@ export const searchQuestions = async (call, callback) => {
     ...(type ? { type: type } : {}),
   };
 
-  const questions = await Question.find(searchQuery)
-    .skip((page - 1) * limit)
-    .limit(Number(limit));
+  console.log("MongoDB query:", searchQuery);
 
-  console.log("questions - ", questions);
-  const total = await Question.countDocuments(searchQuery);
+  try {
+    const questions = await Question.find(searchQuery)
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
 
-  callback(null, {
-    questions: questions.map((q) => ({
-      id: q._id.toString(),
-      title: q.title,
-      type: q.type,
-      solution: q.solution,
-      options: q.options.map((o) => ({
-        text: o.text,
-        isCorrect: o.isCorrectAnswer,
+    console.log("Found questions:", questions);
+
+    const total = await Question.countDocuments(searchQuery);
+    console.log("Total documents:", total);
+
+    const response = {
+      questions: questions.map((q) => ({
+        id: q._id.toString(),
+        title: q.title,
+        type: q.type,
+        solution: q.solution,
+        options: q.options.map((o) => ({
+          text: o.text,
+          isCorrect: o.isCorrectAnswer,
+        })),
       })),
-    })),
-    total,
-    totalPages: Math.ceil(total / limit),
-    currentPage: page,
-  });
+      total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+    };
+
+    console.log("Sending response:", response);
+    callback(null, response);
+  } catch (error) {
+    console.error("Error in searchQuestions:", error);
+    callback(error);
+  }
 };

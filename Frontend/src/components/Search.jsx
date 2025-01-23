@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -14,9 +12,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-// Updated proto imports for CommonJS style
-const { QuestionServiceClient } = require("@/proto/questions_grpc_web_pb");
-const { SearchRequest } = require("@/proto/questions_pb");
+import { QuestionServiceClient } from "@/proto/questions_grpc_web_pb";
+import { SearchRequest } from "@/proto/searchrequest";
 
 const client = new QuestionServiceClient("http://localhost:8080", null, null);
 const tags = ["MCQ", "Anagram", "Read Along"];
