@@ -40,3 +40,20 @@ For faster database queries, the following index was used:
 
 ```js
 db.QuestionData.createIndex({ type: 1, title: 1 })
+```
+
+## Envoy
+
+As gRPC doesn't have native browser support, I have used a proxy server (Envoy) to make the gRPC calls. 
+The .yaml file can be found in the `Backend` directory.
+
+
+Protoc command to generate the gRPC code:
+
+
+## ProtoBuff
+```sh
+protoc --js_out=import_style=commonjs,binary:./Frontend/src/proto --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./Frontend/src/proto -I ./proto ./proto/questions.proto
+
+```
+This will generate necessary files in the `Frontend/src/proto` directory.
