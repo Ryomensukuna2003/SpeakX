@@ -8,19 +8,29 @@ export const findById = async (call, callback) => {
     if (!question) {
       return callback(null, { error: "Question not found", status: 404 });
     }
-    console.log("Question Found - ", question);
-    callback(null, {
-      question: {
-        id: question._id.toString(),
-        title: question.title,
-        type: question.type,
-        solution: question.solution,
-        options: question.options.map((o) => ({
-          text: o.text,
-          isCorrect: o.isCorrectAnswer,
-        })),
-      },
-    });
+
+    const response = {
+      id: question._id.toString(),
+      title: question.title,
+      type: question.type,
+      solution: question.solution,
+
+      // For MCQ type questions
+      options: question.options.map((o) => ({
+        text: o.text,
+        isCorrect: o.isCorrectAnswer,
+      })),
+
+      // For Anagram type questions
+      blocks: question.blocks.map((b) => ({
+        text: b.text,
+        showInOption: b.showInOption,
+        isAnswer: b.isAnswer,
+      })),
+      anagramType: question.anagramType,
+    };
+
+    callback(null, response);
   } catch (error) {
     console.error(error);
     callback(null, { error: "Failed to fetch question details", status: 500 });
@@ -28,26 +38,28 @@ export const findById = async (call, callback) => {
 };
 
 export const searchQuestions = async (call, callback) => {
-  console.log("Received search request:", call.request);
+  const { query, page = 1, limit = 10, type } = call.request;
+  let typeArr = [];
+  if (type) {
+    typeArr = type
+      .toUpperCase()
+      .split(",")
+      .map((t) => t.trim()); // Trim spaces around each type
+  }
 
-  const { query, page = 1, limit = 10, type = "" } = call.request;
+  console.log("Received search request:", query, page, limit, typeArr);
 
   const searchQuery = {
-    ...(query ? { title: { $regex: query, $options: "i" } } : {}),
-    ...(type ? { type: type } : {}),
+    ...(typeArr.length > 0 && { type: { $in: typeArr } }),
+    ...(query && { title: { $regex: query, $options: "i" } }),
   };
-
-  console.log("MongoDB query:", searchQuery);
 
   try {
     const questions = await Question.find(searchQuery)
       .skip((page - 1) * limit)
       .limit(Number(limit));
 
-    console.log("Found questions:", questions);
-
     const total = await Question.countDocuments(searchQuery);
-    console.log("Total documents:", total);
 
     const response = {
       questions: questions.map((q) => ({
@@ -59,16 +71,16 @@ export const searchQuestions = async (call, callback) => {
           text: o.text,
           isCorrect: o.isCorrectAnswer,
         })),
+        anagramType: q.anagramType, // Added field
       })),
       total,
       totalPages: Math.ceil(total / limit),
       currentPage: page,
     };
 
-    console.log("Sending response:", response);
     callback(null, response);
   } catch (error) {
     console.error("Error in searchQuestions:", error);
-    callback(error);
+    callback(null, { error: "Failed to fetch questions", status: 500 });
   }
 };

@@ -1,184 +1,121 @@
-import React, { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-
-import { QuestionServiceClient } from "@/proto/questions_grpc_web_pb";
-import { SearchRequest } from "@/proto/searchrequest";
-
-const client = new QuestionServiceClient("http://localhost:8080", null, null);
-const tags = ["MCQ", "Anagram", "Read Along"];
-
+import React, { useEffect, useState } from "react";
+import { searchQuestions } from '../QuestionServiceClient';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
+const tags = ["MCQ", "ANAGRAM", "READ_ALONG", "CONVERSATION", "CONTENT_ONLY"];
 const ITEMS_PER_PAGE = 9;
 
 export default function SearchWithTags() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleTagClick = (tag) => {
     setSelectedTags((prevTags) =>
-      prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]
+      prevTags.includes(tag)
+        ? prevTags.filter((t) => t !== tag)
+        : [...prevTags, tag]
     );
   };
 
   const handleSearch = () => {
     setIsLoading(true);
-    const request = new SearchRequest();
-    request.setQuery(searchTerm);
-    request.setPage(currentPage);
-    request.setLimit(ITEMS_PER_PAGE);
-
-    // Add tags to request if your proto supports it
-    selectedTags.forEach(tag => request.addTags(tag));
-
-    client.searchQuestions(request, {}, (err, response) => {
-      setIsLoading(false);
-      if (err) {
-        console.error("Error fetching questions:", err);
-        return;
-      }
-
-      try {
-        // Get questions from the response
-        const questionsList = response.getQuestionsList();
-
-        // Map the questions to a more usable format
-        const results = questionsList.map((q) => ({
-          id: q.getId(),
-          title: q.getTitle(),
-          type: q.getType(),
-          tags: q.getTagsList()
+    const type = selectedTags.join(',');
+    searchQuestions(searchTerm, page, ITEMS_PER_PAGE, type)
+      .then(response => {
+        const results = response.questionsList.map((q) => ({
+          id: q.id,
+          title: q.title,
+          type: q.type,
         }));
-
+        setTotalPages(response.totalpages);
+        setCurrentPage(response.currentpage);
         setSearchResults(results);
-        setTotalPages(Math.max(1, Math.ceil(response.getTotalCount() / ITEMS_PER_PAGE)));
-      } catch (error) {
-        console.error("Error processing response:", error);
-      }
-    });
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching questions:', error);
+        setIsLoading(false);
+      });
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
+  const findByID = (id, tag) => {
+    console.log('ID:', id);
+    console.log("Tag: ", tag);
+    navigate(`/${tag}/?id=${id}`);
+  }
+
+  const nextPage = () => {
+    if (searchResults.totalPages === page) return;
+    setPage(() => page + 1);
+
+    console.log('Next Page');
+  }
+
+  const prevPage = () => {
+    if (page === 1) return;
+    setPage(() => page - 1);
+    console.log('Prev Page');
+  }
+
+  useEffect(() => {
+    handleSearch();
+  }, [page])
 
   return (
-    <div className="container mx-auto p-4">
+    <div>
       <div className="mb-6">
         <div className="flex gap-2 mb-4">
-          <Input
+          <input
             type="text"
             placeholder="Search questions..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="flex-grow"
+            className="flex-grow p-2 border border-gray-300 rounded"
           />
-          <Button
+          <button
             onClick={handleSearch}
-            disabled={isLoading}
+            className="px-4 py-2 bg-black text-white rounded hover:bg-neutral-600"
           >
             {isLoading ? "Searching..." : "Search"}
-          </Button>
+          </button>
         </div>
         <div className="flex flex-wrap gap-2">
           {tags.map((tag) => (
-            <Badge
+            <p
               key={tag}
-              variant={selectedTags.includes(tag) ? "default" : "outline"}
-              className="cursor-pointer rounded-sm"
+              className={`cursor-pointer rounded p-2 border ${selectedTags.includes(tag) ? "bg-black text-white" : "bg-white text-black border-black"
+                }`}
               onClick={() => handleTagClick(tag)}
             >
               {tag}
-            </Badge>
+            </p>
           ))}
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="text-center text-gray-500 my-8">
-          Loading results...
-        </div>
-      ) : searchResults.length === 0 ? (
-        <div className="text-center text-gray-500 my-8">
-          No results found. Try adjusting your search terms.
-        </div>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
-          {searchResults.map((question) => (
-            <Card key={question.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="text-lg">{question.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-2">{question.type}</p>
-                {question.tags && question.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {question.tags.map((tag, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {searchResults.length > 0 && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => {
-                  setCurrentPage((prev) => Math.max(prev - 1, 1));
-                  handleSearch();
-                }}
-                disabled={currentPage === 1}
-              />
-            </PaginationItem>
-            {[...Array(totalPages)].map((_, index) => (
-              <PaginationItem key={index}>
-                <PaginationLink
-                  onClick={() => {
-                    setCurrentPage(index + 1);
-                    handleSearch();
-                  }}
-                  isActive={currentPage === index + 1}
-                >
-                  {index + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => {
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-                  handleSearch();
-                }}
-                disabled={currentPage === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
+      {/* Cards */}
+      <button className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
+        {searchResults.map((question) => (
+          <div
+            key={question.id}
+            className="p-4 border text-left rounded hover:shadow-lg transition-shadow relative"
+          >
+            <button className="text-lg p-2 text-left font-semibold" onClick={() => findByID(question.id, question.type)}>{question.title}</button>
+            <p className="text-sm text-gray-500 absolute bottom-2 right-2">{question.type}</p>
+          </div>
+        ))}
+      </button>
+      <div className="flex justify-center items-center">
+        <button className="p-1 rounded bg-neutral-200 m-2" onClick={() => prevPage()}><ChevronLeft /></button>
+        <p>{currentPage} of {totalPages}</p>
+        <button className="p-1 rounded bg-neutral-200 m-2" onClick={() => nextPage()}><ChevronRight /></button>
+      </div>
     </div>
   );
 }

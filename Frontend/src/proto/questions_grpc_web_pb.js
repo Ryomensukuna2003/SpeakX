@@ -8,7 +8,7 @@
 // versions:
 // 	protoc-gen-grpc-web v1.5.0
 // 	protoc              v3.14.0
-// source: src/proto/questions.proto
+// source: questions.proto
 
 
 /* eslint-disable */

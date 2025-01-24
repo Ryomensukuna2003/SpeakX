@@ -9,11 +9,18 @@ const questionSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     type: { type: String, required: true },
-    solution: { type: String,required: true },
+    solution: { type: String, required: true },
     options: [
       {
         text: { type: String },
         isCorrectAnswer: { type: Boolean },
+      },
+    ],
+    blocks: [
+      {
+        text: { type: String },
+        showInOption: { type: Boolean },
+        isAnswer: { type: Boolean },
       },
     ],
   },
