@@ -69,28 +69,27 @@ export default function SearchWithTags() {
 
   return (
     <div>
-      <div className="mb-6">
-        <div className="flex gap-2 mb-4">
+      <div className="search-container">
+        <div className="search-bar">
           <input
             type="text"
             placeholder="Search questions..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-grow p-2 border border-gray-300 rounded"
+            className="search-input"
           />
           <button
             onClick={handleSearch}
-            className="px-4 py-2 bg-black text-white rounded hover:bg-neutral-600"
+            className="search-button"
           >
             {isLoading ? "Searching..." : "Search"}
           </button>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="tags-container">
           {tags.map((tag) => (
             <p
               key={tag}
-              className={`cursor-pointer rounded p-2 border ${selectedTags.includes(tag) ? "bg-black text-white" : "bg-white text-black border-black"
-                }`}
+              className={`tag ${selectedTags.includes(tag) ? "selected" : ""}`}
               onClick={() => handleTagClick(tag)}
             >
               {tag}
@@ -100,21 +99,21 @@ export default function SearchWithTags() {
       </div>
 
       {/* Cards */}
-      <button className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
+      <button className="cards-grid">
         {searchResults.map((question) => (
           <div
             key={question.id}
-            className="p-4 border text-left rounded hover:shadow-lg transition-shadow relative"
+            className="card"
           >
-            <button className="text-lg p-2 text-left font-semibold" onClick={() => findByID(question.id, question.type)}>{question.title}</button>
-            <p className="text-sm text-gray-500 absolute bottom-2 right-2">{question.type}</p>
+            <button className="card-title" onClick={() => findByID(question.id, question.type)}>{question.title}</button>
+            <p className="card-type">{question.type}</p>
           </div>
         ))}
       </button>
-      <div className="flex justify-center items-center">
-        <button className="p-1 rounded bg-neutral-200 m-2" onClick={() => prevPage()}><ChevronLeft /></button>
+      <div className="pagination">
+        <button className="pagination-button" onClick={() => prevPage()}><ChevronLeft /></button>
         <p>{currentPage} of {totalPages}</p>
-        <button className="p-1 rounded bg-neutral-200 m-2" onClick={() => nextPage()}><ChevronRight /></button>
+        <button className="pagination-button" onClick={() => nextPage()}><ChevronRight /></button>
       </div>
     </div>
   );

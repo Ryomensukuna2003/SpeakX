@@ -17,15 +17,15 @@ const MCQ = () => {
       });
   }, [id])
   return (
-    <div className='flex justify-center items-center min-h-screen'>
-      <div className='flex-col m-auto p-4 border-neutral-600 border-2 rounded'>
-        <div className='text-3xl'>{question?.type.charAt(0).toUpperCase() + question?.type.slice(1).toLowerCase()}</div>
-        <div className='text-lg mt-4'>Read the Question and choose the most correct option</div>
+    <div className='container'>
+      <div className='content'>
+        <div className='title'>{question?.type.charAt(0).toUpperCase() + question?.type.slice(1).toLowerCase()}</div>
+        <div className='subtitle'>Read the Question and choose the most correct option</div>
         <div>{question?.title}</div>
         <div>
           {question?.optionsList?.map((option, index) => {
             return (
-              <button key={index} className='flex items-center w-full bg-neutral-400 rounded my-2 p-2'>
+              <button key={index} className='option'>
                 <div>{option.text}</div>
               </button>
             )

@@ -1,4 +1,141 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0 20%;
+}
 
+.content {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    padding: 16px;
+    border: 2px solid #4b5563;
+    border-radius: 8px;
+}
+
+.title {
+    font-size: 1.875rem;
+}
+
+.subtitle {
+    font-size: 1.125rem;
+    margin-top: 16px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: #a3a3a3;
+    border-radius: 8px;
+    margin: 8px 0;
+    padding: 8px;
+}
+
+.search-container {
+    margin-bottom: 24px;
+}
+
+.search-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.search-input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+}
+
+.search-button {
+    padding: 8px 16px;
+    background-color: black;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #4b5563;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    cursor: pointer;
+    padding: 8px;
+    border: 1px solid black;
+    border-radius: 4px;
+}
+
+.tag.selected {
+    background-color: black;
+    color: white;
+}
+
+.cards-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(3, 1fr);
+    margin-bottom: 24px;
+}
+
+.card {
+    padding: 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    text-align: left;
+    transition: box-shadow 0.3s;
+    position: relative;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    font-size: 1.125rem;
+    padding: 8px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.card-type {
+    font-size: 0.875rem;
+    color: #6b7280;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination-button {
+    padding: 4px;
+    border-radius: 4px;
+    background-color: #e5e7eb;
+    margin: 8px;
+}
+
+.home-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.home-title {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+}
