@@ -3,7 +3,7 @@ import protoLoader from "@grpc/proto-loader";
 import { findById, searchQuestions } from "./utils/utils.js";
 import { ReflectionService } from "@grpc/reflection";
 
-const PROTO_PATH = "/home/sukuna/Desktop/SpeakX/proto/questions.proto";
+const PROTO_PATH = "./proto/questions.proto";
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
   longs: String,

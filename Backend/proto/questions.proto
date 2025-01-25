@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package questions; 
+
+
+service QuestionService {
+  rpc SearchQuestions (SearchRequest) returns (SearchResponse);
+  rpc FindByID(IDRequest) returns (IDResponse);
+}
+
+
+// For Search --------------------------------------------
+//  User will give this request
+message SearchRequest {
+  string query = 1;
+  int32 page = 2;
+  int32 limit = 3;
+  string type = 4;
+}
+
+// Server will return this response
+message SearchResponse {
+  repeated Question questions = 1;
+  int32 total = 2;
+  int32 totalPages = 3;
+  int32 currentPage = 4;
+}
+
+message Question {
+  string id = 1;
+  string title = 2;
+  string type = 3;
+  string solution=4;
+  repeated Options options = 5;
+}
+
+// For Search --------------------------------------------
+
+
+
+// For ID ------------------------------------------------
+message IDRequest{
+  string id=1;
+}
+
+message IDResponse {
+  string id = 1;
+  string title = 2;
+  string type = 3;
+  string solution=4;
+  // For MCQ
+  repeated Options options = 5;
+  // For Anagram
+  string anagramType = 6;
+  repeated Blocks blocks = 7;
+}
+
+message Options {
+  string text = 1;
+  bool isCorrect = 2;
+}
+
+message Blocks {
+  string text = 1;
+  bool showInOption=2;
+  bool isAnswer=3;
+}
+
+// Conversation, Content_Only and READ_ALONG has only type and title
+
+
+// For ID ------------------------------------------------
+
+
+// protoc --js_out=import_style=commonjs,binary:./Frontend/src/proto --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./Frontend/src/proto -I ./proto ./proto/questions.proto

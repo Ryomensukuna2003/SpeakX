@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
-
+const URI =
+  "mongodb+srv://Shivanshu:bGi2RLrwgxha9WRh@cluster0.oxwedsx.mongodb.net/SpeakX_Test_Data?retryWrites=true&w=majority&appName=Cluster0";
 mongoose
-  .connect("mongodb://localhost:27017/SpeakX_Test_Data")
+  .connect(URI)
   .then(() => console.log("Connected to DB"))
   .catch((err) => console.log(err));
 
