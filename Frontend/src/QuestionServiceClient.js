@@ -1,7 +1,8 @@
 import { QuestionServiceClient } from "./proto/questions_grpc_web_pb";
 import { SearchRequest, IDRequest } from "./proto/questions_pb";
 
-const client = new QuestionServiceClient("http://localhost:8080");
+// const client = new QuestionServiceClient("http://172.31.1.115");
+const client = new QuestionServiceClient("http://13.201.98.102:8080");
 
 export const searchQuestions = (query, page, limit, type) => {
   return new Promise((resolve, reject) => {
