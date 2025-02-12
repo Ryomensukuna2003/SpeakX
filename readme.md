@@ -40,6 +40,7 @@ For faster database queries, the following index was used:
 
 ```js
 db.QuestionData.createIndex({ type: 1, title: 1 })
+db.Question.createIndex({ title: "text" }, { name: "title_text" });
 ```
 
 ## Envoy
